@@ -202,6 +202,10 @@ class ODKClient:
         if age:
             now = datetime.now()
             birth_year = now.year - age
+
+            if birth_year < 0:
+                _logger.warning("Future birthdate is not allowed.")
+                return None
             return now.replace(year=birth_year).strftime("%Y-%m-%d")
 
     def get_individual_data(self, record):
