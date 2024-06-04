@@ -11,6 +11,7 @@
     "license": "LGPL-3",
     "depends": [
         "queue_job",
+        "storage_backend",
     ],
     "data": [
         "security/ir.model.access.csv",
