@@ -97,7 +97,6 @@ class ODKClient:
         for member in data["value"]:
             try:
                 mapped_json = pyjq.compile(self.json_formatter).all(member)[0]
-
                 if self.target_registry == "individual":
                     mapped_json.update({"is_registrant": True, "is_group": False})
                 elif self.target_registry == "group":
@@ -163,7 +162,7 @@ class ODKClient:
                     ]
 
                 # media import
-                instance_id = member["meta"]["instanceID"]
+                instance_id = member.get("meta").get("instanceID")
                 if instance_id:
                     exit_attachment = self.list_expected_attachments(
                         self.base_url, self.project_id, self.form_id, instance_id, self.session
@@ -293,8 +292,10 @@ class ODKClient:
 
     # download the attachement
     def download_attachment(self, base_url, project_id, form_id, instance_id, filename, session_token):
-        url = f"{base_url}/v1/projects/{project_id}/forms/\
-            {form_id}/submissions/{instance_id}/attachments/{filename}"
+        url = (
+            f"{base_url}/v1/projects/{project_id}/forms/{form_id}/"
+            f"submissions/{instance_id}/attachments/{filename}"
+        )
         headers = {"Authorization": f"Bearer {session_token}"}
         response = requests.get(url, headers=headers, timeout=10)
         response.raise_for_status()
