@@ -162,47 +162,49 @@ class ODKClient:
                     ]
 
                 # media import
-                instance_id = member.get("meta").get("instanceID")
-                if instance_id:
-                    exit_attachment = self.list_expected_attachments(
-                        self.base_url, self.project_id, self.form_id, instance_id, self.session
-                    )
-                    if exit_attachment:
-                        first_image_stored = False
-                        for attachment in exit_attachment:
-                            filename = attachment["name"]
-                            get_attachment = self.download_attachment(
-                                self.base_url,
-                                self.project_id,
-                                self.form_id,
-                                instance_id,
-                                filename,
-                                self.session,
-                            )
-                            attachment_base64 = base64.b64encode(get_attachment).decode("utf-8")
-                            image_verify = self.is_image(filename)
-                            # verify the image mimetype and check image field available
-                            # check image field are available if not map into ths supporting document
-                            # store first image and other document store into the supporting document
-                            if not first_image_stored and image_verify and "image_1920" in mapped_json:
-                                mapped_json.update({"image_1920": attachment_base64})
-                                first_image_stored = True
-                            else:
-                                backend_id = (
-                                    self.env.ref("storage_backend.default_storage_backend").id
-                                    or self.env["storage.backend"].search([], limit=1).id
+                meta = member.get("meta")
+                if meta:
+                    instance_id = meta.get("instanceID")
+                    if instance_id:
+                        exit_attachment = self.list_expected_attachments(
+                            self.base_url, self.project_id, self.form_id, instance_id, self.session
+                        )
+                        if exit_attachment:
+                            first_image_stored = False
+                            for attachment in exit_attachment:
+                                filename = attachment["name"]
+                                get_attachment = self.download_attachment(
+                                    self.base_url,
+                                    self.project_id,
+                                    self.form_id,
+                                    instance_id,
+                                    filename,
+                                    self.session,
                                 )
-                                mapped_json["supporting_documents_ids"] = [
-                                    (
-                                        0,
-                                        0,
-                                        {
-                                            "backend_id": backend_id,
-                                            "name": attachment["name"],
-                                            "data": attachment_base64,
-                                        },
+                                attachment_base64 = base64.b64encode(get_attachment).decode("utf-8")
+                                image_verify = self.is_image(filename)
+                                # verify the image mimetype and check image field available
+                                # check image field are available if not map into ths supporting document
+                                # store first image and other document store into the supporting document
+                                if not first_image_stored and image_verify and "image_1920" in mapped_json:
+                                    mapped_json.update({"image_1920": attachment_base64})
+                                    first_image_stored = True
+                                else:
+                                    backend_id = (
+                                        self.env.ref("storage_backend.default_storage_backend").id
+                                        or self.env["storage.backend"].search([], limit=1).id
                                     )
-                                ]
+                                    mapped_json["supporting_documents_ids"] = [
+                                        (
+                                            0,
+                                            0,
+                                            {
+                                                "backend_id": backend_id,
+                                                "name": attachment["name"],
+                                                "data": attachment_base64,
+                                            },
+                                        )
+                                    ]
 
                 updated_mapped_json = self.get_addl_data(mapped_json)
                 # update value into the res_partner table

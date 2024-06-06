@@ -1,7 +1,11 @@
-git+https://github.com/OpenG2P/openg2p-program@17.0-develop#subdirectory=g2p_programs
+git+https://github.com/OpenG2P/storage@17.0#subdirectory=storage_backend
+git+https://github.com/OpenG2P/storage@17.0#subdirectory=storage_backend_s3
+git+https://github.com/OpenG2P/storage@17.0#subdirectory=storage_file
+git+https://github.com/OpenG2P/openg2p-documents@17.0-develop#subdirectory=g2p_documents
 git+https://github.com/OpenG2P/openg2p-registry@17.0-develop#subdirectory=g2p_registry_base
-git+https://github.com/OpenG2P/openg2p-registry@17.0-develop#subdirectory=g2p_registry_group
 git+https://github.com/OpenG2P/openg2p-registry@17.0-develop#subdirectory=g2p_registry_individual
+git+https://github.com/OpenG2P/openg2p-registry@17.0-develop#subdirectory=g2p_registry_group
 git+https://github.com/OpenG2P/openg2p-registry@17.0-develop#subdirectory=g2p_registry_membership
 git+https://github.com/OpenG2P/openg2p-registry@17.0-develop#subdirectory=g2p_bank
-git+https://github.com/OpenG2P/openg2p-security@17.0-develop#subdirectory=g2p_encryption
+git+https://github.com/OpenG2P/openg2p-program@17.0-develop#subdirectory=g2p_programs
+git+https://github.com/OpenG2P/openg2p-program@17.0-develop#subdirectory=g2p_program_registrant_info
