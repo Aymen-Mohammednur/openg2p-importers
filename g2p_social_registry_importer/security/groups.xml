@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record model="ir.module.category" id="social_registry_import_module">
+        <field name="name">Import Social Registry</field>
+        <field name="description">User access level for fetching social registry data</field>
+        <field name="sequence">4</field>
+    </record>
+    <record model="res.groups" id="social_registry_import_admin">
+        <field name="name">Administrator</field>
+        <field name="category_id" ref="social_registry_import_module" />
+    </record>
+</odoo>
