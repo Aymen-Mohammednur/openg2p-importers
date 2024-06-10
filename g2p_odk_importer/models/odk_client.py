@@ -1,5 +1,7 @@
+import base64
 import json
 import logging
+import mimetypes
 from datetime import datetime
 
 import pyjq
@@ -64,6 +66,7 @@ class ODKClient:
             _logger.exception("Connection test failed: %s", e)
             raise ValidationError(f"Connection test failed: {e}") from e
 
+    # ruff: noqa: C901
     def import_delta_records(
         self,
         last_sync_timestamp=None,
@@ -91,11 +94,9 @@ class ODKClient:
             _logger.exception("Failed to parse response: %s", e)
             raise ValidationError(f"Failed to parse response: {e}") from e
         data = response.json()
-
         for member in data["value"]:
             try:
                 mapped_json = pyjq.compile(self.json_formatter).all(member)[0]
-
                 if self.target_registry == "individual":
                     mapped_json.update({"is_registrant": True, "is_group": False})
                 elif self.target_registry == "group":
@@ -160,8 +161,52 @@ class ODKClient:
                         for reg_id in mapped_json["reg_ids"]
                     ]
 
-                updated_mapped_json = self.get_addl_data(mapped_json)
+                # media import
+                meta = member.get("meta")
+                if meta:
+                    instance_id = meta.get("instanceID")
+                    if instance_id:
+                        exit_attachment = self.list_expected_attachments(
+                            self.base_url, self.project_id, self.form_id, instance_id, self.session
+                        )
+                        if exit_attachment:
+                            first_image_stored = False
+                            for attachment in exit_attachment:
+                                filename = attachment["name"]
+                                get_attachment = self.download_attachment(
+                                    self.base_url,
+                                    self.project_id,
+                                    self.form_id,
+                                    instance_id,
+                                    filename,
+                                    self.session,
+                                )
+                                attachment_base64 = base64.b64encode(get_attachment).decode("utf-8")
+                                image_verify = self.is_image(filename)
+                                # verify the image mimetype and check image field available
+                                # check image field are available if not map into ths supporting document
+                                # store first image and other document store into the supporting document
+                                if not first_image_stored and image_verify and "image_1920" in mapped_json:
+                                    mapped_json.update({"image_1920": attachment_base64})
+                                    first_image_stored = True
+                                else:
+                                    backend_id = (
+                                        self.env.ref("storage_backend.default_storage_backend").id
+                                        or self.env["storage.backend"].search([], limit=1).id
+                                    )
+                                    mapped_json["supporting_documents_ids"] = [
+                                        (
+                                            0,
+                                            0,
+                                            {
+                                                "backend_id": backend_id,
+                                                "name": attachment["name"],
+                                                "data": attachment_base64,
+                                            },
+                                        )
+                                    ]
 
+                updated_mapped_json = self.get_addl_data(mapped_json)
                 # update value into the res_partner table
                 self.env["res.partner"].sudo().create(updated_mapped_json)
                 data.update({"form_updated": True})
@@ -233,3 +278,27 @@ class ODKClient:
         # Override this method to add more data
 
         return mapped_json
+
+    # Determine if the file is an image based on its MIME type
+    def is_image(self, filename):
+        mimetype, _ = mimetypes.guess_type(filename)
+        return mimetype and mimetype.startswith("image")
+
+    # fetch list of attachment
+    def list_expected_attachments(self, base_url, project_id, form_id, instance_id, session_token):
+        url = f"{base_url}/v1/projects/{project_id}/forms/{form_id}/submissions/{instance_id}/attachments"
+        headers = {"Authorization": f"Bearer {session_token}"}
+        response = requests.get(url, headers=headers, timeout=10)
+        response.raise_for_status()
+        return response.json()
+
+    # download the attachement
+    def download_attachment(self, base_url, project_id, form_id, instance_id, filename, session_token):
+        url = (
+            f"{base_url}/v1/projects/{project_id}/forms/{form_id}/"
+            f"submissions/{instance_id}/attachments/{filename}"
+        )
+        headers = {"Authorization": f"Bearer {session_token}"}
+        response = requests.get(url, headers=headers, timeout=10)
+        response.raise_for_status()
+        return response.content
