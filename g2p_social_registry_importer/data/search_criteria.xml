@@ -4,7 +4,7 @@
         <field name="name">Fetch Social Registry Data</field>
         <field name="data_source_id" ref="g2p_social_registry_importer.g2p_social_registry_data_source" />
         <field name="import_registrant_without_id">False</field>
-        <field name="target_registry">data</field>
+        <field name="target_registry">group</field>
         <field name="target_program" />
         <field name="query">{
             getRegistrants(limit:2){
