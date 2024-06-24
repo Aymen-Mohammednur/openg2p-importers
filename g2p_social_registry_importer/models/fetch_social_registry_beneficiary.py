@@ -40,7 +40,7 @@ class G2PFetchSocialRegistryBeneficiary(models.Model):
         required=True,
     )
 
-    # last_sync_time = fields.Datetime(string="Last synced on", required=False)
+    last_sync_date = fields.Datetime(string="Last synced on", required=False)
 
     imported_registrant_ids = fields.One2many(
         "g2p.social.registry.imported.registrants",
@@ -140,12 +140,49 @@ class G2PFetchSocialRegistryBeneficiary(models.Model):
 
     def get_graphql_query(self):
 
-        graphql_query = self.query[0:-1] + "totalRegistrantCount" + "}"
+        query = self.query.strip()
 
-        query = graphql_query
-        _logger.info(query)
+        graphql_query = query[0:-1] + "totalRegistrantCount }"
+        _logger.debug(query)
 
-        return query
+        if self.target_registry:
+            index = graphql_query.find("(") + 1
+            is_group = str(self.target_registry == "group").lower()
+            if not index:
+                get_registrants_index = graphql_query.find("getRegistrants") + 15
+                graphql_query = (
+                    graphql_query[:get_registrants_index] + "()" + graphql_query[get_registrants_index:]
+                )
+                index = graphql_query.find("(") + 1
+
+                graphql_query = graphql_query[:index] + f"isGroup: {is_group}" + graphql_query[index:]
+
+            else:
+                graphql_query = graphql_query[:index] + f"isGroup: {is_group}" + graphql_query[index:]
+
+        if self.last_sync_date:
+            index = graphql_query.find("(") + 1
+            if not index:
+                get_registrants_index = graphql_query.find("getRegistrants") + 15
+                graphql_query = (
+                    graphql_query[:get_registrants_index] + "()" + graphql_query[get_registrants_index:]
+                )
+                index = graphql_query.find("(") + 1
+                graphql_query = (
+                    graphql_query[:index]
+                    + f'lastSyncDate: "{self.last_sync_date.strftime("%Y-%m-%dT%H:%M:%S.000Z")}"'
+                    + graphql_query[index:]
+                )
+
+            else:
+                graphql_query = (
+                    graphql_query[:index]
+                    + f'lastSyncDate: "{self.last_sync_date.strftime("%Y-%m-%dT%H:%M:%S.000Z")}",'
+                    + graphql_query[index:]
+                )
+
+        _logger.debug("updated graphql query", graphql_query)
+        return graphql_query.strip()
 
     def get_search_request(self, reference_id, today_isoformat):
 
@@ -217,7 +254,7 @@ class G2PFetchSocialRegistryBeneficiary(models.Model):
 
     def get_member_kind(self, data):
         # TODO: Kind will be in List
-        kind_str = data.get("kind").get("name")
+        kind_str = data.get("kind").get("name") if data.get("kind") else None
 
         kind = self.env["g2p.group.membership.kind"].search([("name", "=", kind_str)], limit=1)
 
@@ -228,7 +265,8 @@ class G2PFetchSocialRegistryBeneficiary(models.Model):
 
     def get_member_relationship(self, individual, data):
         # TODO: Add relationship logic
-        return None
+        res = None
+        return res
 
     def create_or_update_registrant(self, partner_id, partner_data):
 
@@ -252,7 +290,7 @@ class G2PFetchSocialRegistryBeneficiary(models.Model):
         if "reg_ids" in partner_data:
             partner_data["reg_ids"] = []
 
-        if "group_membership_ids" in partner_data and self.registry == "group":
+        if "group_membership_ids" in partner_data and self.target_registry == "group":
             individual_ids = []
             relationships_ids = []
             for individual_mem in partner_data.get("group_membership_ids"):
@@ -453,7 +491,8 @@ class G2PFetchSocialRegistryBeneficiary(models.Model):
             timeout=constants.REQUEST_TIMEOUT,
         )
 
-        _logger.debug("Social Registry Search API response: %s", response.text)
+        if not response.ok:
+            _logger.error("Social Registry Search API response: %s", response.text)
         response.raise_for_status()
 
         sticky = False
@@ -484,8 +523,8 @@ class G2PFetchSocialRegistryBeneficiary(models.Model):
                         sticky = True
 
                 else:
-                    kind = "danger"
-                    message = _("Unable to process query.")
+                    kind = "success"
+                    message = _("No matching records found.")
 
         else:
             kind = "danger"

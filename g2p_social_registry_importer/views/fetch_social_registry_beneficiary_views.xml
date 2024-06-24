@@ -38,9 +38,9 @@
                     <group name="query">
                         <field name="query" colspan="4" />
                     </group>
-                    <!-- <group name="last_sync_time">
-                        <field name="last_sync_time" />
-                    </group> -->
+                    <group name="last_sync_date">
+                        <field name="last_sync_date" />
+                    </group>
                     <group name="imported_registrants" attrs="{'invisible': [('id', '=', False)]}">
                         <field name="imported_registrant_ids" options="{'no_create': True, 'no_open': True}">
                             <tree>
