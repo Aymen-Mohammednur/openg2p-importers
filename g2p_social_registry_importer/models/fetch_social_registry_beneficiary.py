@@ -158,7 +158,7 @@ class G2PFetchSocialRegistryBeneficiary(models.Model):
                 graphql_query = graphql_query[:index] + f"isGroup: {is_group}" + graphql_query[index:]
 
             else:
-                graphql_query = graphql_query[:index] + f"isGroup: {is_group}" + graphql_query[index:]
+                graphql_query = graphql_query[:index] + f"isGroup: {is_group}," + graphql_query[index:]
 
         if self.last_sync_date:
             index = graphql_query.find("(") + 1
