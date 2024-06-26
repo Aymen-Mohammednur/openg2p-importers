@@ -122,7 +122,12 @@ class ODKClient:
                 if "group_membership_ids" in mapped_json and self.target_registry == "group":
                     individual_ids = []
                     relationships_ids = []
-                    for individual_mem in mapped_json.get("group_membership_ids"):
+                    group_membership_data = (
+                        mapped_json.get("group_membership_ids")
+                        if mapped_json.get("group_membership_ids") is not None
+                        else []
+                    )
+                    for individual_mem in group_membership_data:
                         individual_data = self.get_individual_data(individual_mem)
                         individual = self.env["res.partner"].sudo().create(individual_data)
                         if individual:
@@ -220,7 +225,8 @@ class ODKClient:
         return data
 
     def get_member_kind(self, record):
-        kind = None
+        kind_as_str = record.get("kind", None)
+        kind = self.env["g2p.group.membership.kind"].search([("name", "=", kind_as_str)], limit=1)
         return kind
 
     def get_member_relationship(self, source_id, record):
