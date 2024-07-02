@@ -1,10 +1,8 @@
 from unittest.mock import MagicMock, patch
-
 from odoo.exceptions import ValidationError
 from odoo.tests.common import TransactionCase
-
 from odoo.addons.g2p_odk_importer.models.odk_client import ODKClient
-
+from datetime import datetime
 
 class TestODKClient(TransactionCase):
     @classmethod
@@ -18,6 +16,17 @@ class TestODKClient(TransactionCase):
         cls.form_id = "test_form_id"
         cls.target_registry = "group"
         cls.json_formatter = "."
+        cls.client = ODKClient(
+            cls.env_mock,
+            1,
+            cls.base_url,
+            cls.username,
+            cls.password,
+            cls.project_id,
+            cls.form_id,
+            cls.target_registry,
+            cls.json_formatter,
+        )
 
     @patch("requests.post")
     def test_login_success(self, mock_post):
@@ -28,6 +37,7 @@ class TestODKClient(TransactionCase):
 
         odk_client = ODKClient(
             self.env_mock,
+            1,
             self.base_url,
             self.username,
             self.password,
@@ -46,6 +56,7 @@ class TestODKClient(TransactionCase):
 
         odk_client = ODKClient(
             self.env_mock,
+            1,
             self.base_url,
             self.username,
             self.password,
@@ -67,6 +78,7 @@ class TestODKClient(TransactionCase):
 
         odk_client = ODKClient(
             self.env_mock,
+            1,
             self.base_url,
             self.username,
             self.password,
@@ -85,6 +97,7 @@ class TestODKClient(TransactionCase):
 
         odk_client = ODKClient(
             self.env_mock,
+            1,
             self.base_url,
             self.username,
             self.password,
@@ -108,6 +121,7 @@ class TestODKClient(TransactionCase):
 
         odk_client = ODKClient(
             self.env_mock,
+            1,
             self.base_url,
             self.username,
             self.password,
@@ -119,7 +133,7 @@ class TestODKClient(TransactionCase):
 
         odk_client.session = "test_token"
         result = odk_client.import_delta_records()
-        self.assertTrue(result.get("form_updated"))
+        self.assertIn("value", result)
 
     @patch("requests.get")
     def test_import_delta_records_failure(self, mock_get):
@@ -127,6 +141,7 @@ class TestODKClient(TransactionCase):
 
         odk_client = ODKClient(
             self.env_mock,
+            1,
             self.base_url,
             self.username,
             self.password,
@@ -139,3 +154,124 @@ class TestODKClient(TransactionCase):
         odk_client.session = "test_token"
         with self.assertRaises(ValidationError):
             odk_client.import_delta_records()
+
+    def test_handle_one2many_fields(self):
+        mapped_json = {
+            "phone_number_ids": [{"phone_no": "123456789", "date_collected": "2024-07-01", "disabled": False}],
+            "group_membership_ids": [],
+            "reg_ids": [{"id_type": "National ID", "value": "12345", "expiry_date": "2024-12-31"}]
+        }
+        self.client.handle_one2many_fields(mapped_json)
+        self.assertIn("phone_number_ids", mapped_json)
+        self.assertIn("reg_ids", mapped_json)
+
+    @patch("requests.get")
+    def test_handle_media_import(self, mock_get):
+        member = {"meta": {"instanceID": "test_instance"}}
+        mapped_json = {}
+        mock_get.return_value.status_code = 200
+        mock_get.return_value.content = b"fake_image_data"
+        mock_get.return_value.json.return_value = [{"name": "test_image.jpg"}]
+
+        self.client.handle_media_import(member, mapped_json)
+        self.assertIn("supporting_documents_ids", mapped_json)
+
+    def test_find_existing_partner(self):
+        mapped_json = {
+            "reg_ids": [(0, 0, {"id_type": "National ID", "value": "12345", "expiry_date": "2024-12-31"})]
+        }
+        self.env_mock["g2p.id.type"].search.return_value.id = 1
+        self.env_mock["res.partner"].search.return_value = MagicMock()
+
+        odk_client = ODKClient(
+            self.env_mock,
+            1,
+            self.base_url,
+            self.username,
+            self.password,
+            self.project_id,
+            self.form_id,
+            self.target_registry,
+            self.json_formatter,
+        )
+
+        result = odk_client.find_existing_partner(mapped_json)
+        self.assertIsNotNone(result)
+
+
+    def test_get_dob(self):
+        record = {"birthdate": "2020-01-01", "age": 4}
+        odk_client = ODKClient(
+            self.env_mock,
+            1,
+            self.base_url,
+            self.username,
+            self.password,
+            self.project_id,
+            self.form_id,
+            self.target_registry,
+            self.json_formatter,
+        )
+
+        dob = odk_client.get_dob(record)
+        self.assertEqual(dob, "2020-01-01")
+
+        record = {"age": 4}
+        dob = odk_client.get_dob(record)
+        self.assertEqual(dob[:4], str(datetime.now().year - 4))
+
+    def test_is_image(self):
+        odk_client = ODKClient(
+            self.env_mock,
+            1,
+            self.base_url,
+            self.username,
+            self.password,
+            self.project_id,
+            self.form_id,
+            self.target_registry,
+            self.json_formatter,
+        )
+
+        result = odk_client.is_image("test.jpg")
+        self.assertTrue(result)
+
+    @patch("requests.get")
+    def test_list_expected_attachments(self, mock_get):
+        mock_get.return_value.status_code = 200
+        mock_get.return_value.json.return_value = [{"name": "test.jpg"}]
+
+        odk_client = ODKClient(
+            self.env_mock,
+            1,
+            self.base_url,
+            self.username,
+            self.password,
+            self.project_id,
+            self.form_id,
+            self.target_registry,
+            self.json_formatter,
+        )
+
+        result = odk_client.list_expected_attachments("http://example.com", "1", "1", "test_instance", "fake_token")
+        self.assertIn({"name": "test.jpg"}, result)
+
+    @patch("requests.get")
+    def test_download_attachment(self, mock_get):
+        mock_get.return_value.status_code = 200
+        mock_get.return_value.content = b"fake_image_data"
+
+        odk_client = ODKClient(
+            self.env_mock,
+            1,
+            self.base_url,
+            self.username,
+            self.password,
+            self.project_id,
+            self.form_id,
+            self.target_registry,
+            self.json_formatter,
+        )
+
+        result = odk_client.download_attachment("http://example.com", "1", "1", "test_instance", "test.jpg", "fake_token")
+        self.assertEqual(result, b"fake_image_data")
