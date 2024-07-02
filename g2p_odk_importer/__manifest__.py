@@ -12,6 +12,7 @@
     "depends": [
         "queue_job",
         "g2p_documents",
+        "g2p_registry_base",
     ],
     "data": [
         "security/ir.model.access.csv",

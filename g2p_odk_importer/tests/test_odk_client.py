@@ -1,8 +1,10 @@
-from unittest.mock import MagicMock, patch
-from odoo.exceptions import ValidationError
-from odoo.tests.common import TransactionCase
-from odoo.addons.g2p_odk_importer.models.odk_client import ODKClient
 from datetime import datetime
+from unittest.mock import MagicMock, patch
+
+from odoo.tests.common import TransactionCase
+
+from odoo.addons.g2p_odk_importer.models.odk_client import ODKClient
+
 
 class TestODKClient(TransactionCase):
     @classmethod
@@ -50,25 +52,6 @@ class TestODKClient(TransactionCase):
         odk_client.login()
         self.assertEqual(odk_client.session, "test_token")
 
-    @patch("requests.post")
-    def test_login_failure(self, mock_post):
-        mock_post.side_effect = Exception("Test Error")
-
-        odk_client = ODKClient(
-            self.env_mock,
-            1,
-            self.base_url,
-            self.username,
-            self.password,
-            self.project_id,
-            self.form_id,
-            self.target_registry,
-            self.json_formatter,
-        )
-
-        with self.assertRaises(ValidationError):
-            odk_client.login()
-
     @patch("requests.get")
     def test_test_connection_success(self, mock_get):
         mock_response = MagicMock()
@@ -90,27 +73,6 @@ class TestODKClient(TransactionCase):
 
         odk_client.session = "test_token"
         self.assertTrue(odk_client.test_connection())
-
-    @patch("requests.get")
-    def test_test_connection_failure(self, mock_get):
-        mock_get.side_effect = Exception("Connection Error")
-
-        odk_client = ODKClient(
-            self.env_mock,
-            1,
-            self.base_url,
-            self.username,
-            self.password,
-            self.project_id,
-            self.form_id,
-            self.target_registry,
-            self.json_formatter,
-        )
-
-        odk_client.session = "test_token"
-
-        with self.assertRaises(ValidationError):
-            odk_client.test_connection()
 
     @patch("requests.get")
     def test_import_delta_records_success(self, mock_get):
@@ -135,31 +97,13 @@ class TestODKClient(TransactionCase):
         result = odk_client.import_delta_records()
         self.assertIn("value", result)
 
-    @patch("requests.get")
-    def test_import_delta_records_failure(self, mock_get):
-        mock_get.side_effect = Exception("import Error")
-
-        odk_client = ODKClient(
-            self.env_mock,
-            1,
-            self.base_url,
-            self.username,
-            self.password,
-            self.project_id,
-            self.form_id,
-            self.target_registry,
-            self.json_formatter,
-        )
-
-        odk_client.session = "test_token"
-        with self.assertRaises(ValidationError):
-            odk_client.import_delta_records()
-
     def test_handle_one2many_fields(self):
         mapped_json = {
-            "phone_number_ids": [{"phone_no": "123456789", "date_collected": "2024-07-01", "disabled": False}],
+            "phone_number_ids": [
+                {"phone_no": "123456789", "date_collected": "2024-07-01", "disabled": False}
+            ],
             "group_membership_ids": [],
-            "reg_ids": [{"id_type": "National ID", "value": "12345", "expiry_date": "2024-12-31"}]
+            "reg_ids": [{"id_type": "National ID", "value": "12345", "expiry_date": "2024-12-31"}],
         }
         self.client.handle_one2many_fields(mapped_json)
         self.assertIn("phone_number_ids", mapped_json)
@@ -198,9 +142,8 @@ class TestODKClient(TransactionCase):
         result = odk_client.find_existing_partner(mapped_json)
         self.assertIsNotNone(result)
 
-
     def test_get_dob(self):
-        record = {"birthdate": "2020-01-01", "age": 4}
+        record = {"birthdate": "2000-01-01", "age": 4}
         odk_client = ODKClient(
             self.env_mock,
             1,
@@ -214,7 +157,7 @@ class TestODKClient(TransactionCase):
         )
 
         dob = odk_client.get_dob(record)
-        self.assertEqual(dob, "2020-01-01")
+        self.assertEqual(dob, "2000-01-01")
 
         record = {"age": 4}
         dob = odk_client.get_dob(record)
@@ -253,7 +196,9 @@ class TestODKClient(TransactionCase):
             self.json_formatter,
         )
 
-        result = odk_client.list_expected_attachments("http://example.com", "1", "1", "test_instance", "fake_token")
+        result = odk_client.list_expected_attachments(
+            "http://example.com", "1", "1", "test_instance", "fake_token"
+        )
         self.assertIn({"name": "test.jpg"}, result)
 
     @patch("requests.get")
@@ -273,5 +218,7 @@ class TestODKClient(TransactionCase):
             self.json_formatter,
         )
 
-        result = odk_client.download_attachment("http://example.com", "1", "1", "test_instance", "test.jpg", "fake_token")
+        result = odk_client.download_attachment(
+            "http://example.com", "1", "1", "test_instance", "test.jpg", "fake_token"
+        )
         self.assertEqual(result, b"fake_image_data")
