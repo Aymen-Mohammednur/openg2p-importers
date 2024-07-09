@@ -241,6 +241,8 @@ class ODKClient:
 
         _logger.warning("No relation defined for member")
 
+        return None
+
     def get_gender(self, gender_val):
         if gender_val:
             gender = self.env["gender.type"].sudo().search([("code", "=", gender_val)], limit=1)
