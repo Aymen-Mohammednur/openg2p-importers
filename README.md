@@ -24,6 +24,7 @@ addon | version | maintainers | summary
 [g2p_mis_importer](g2p_mis_importer/) | 17.0.1.2.0 |  | G2P MIS Importer
 [g2p_odk_importer](g2p_odk_importer/) | 17.0.1.2.0 |  | Import records from ODK
 [g2p_odk_importer_program](g2p_odk_importer_program/) | 17.0.1.2.0 |  | Import records from ODK and add then into Program
+[g2p_social_registry_importer](g2p_social_registry_importer/) | 17.0.1.1.0 |  | Import records from Social Registry
 
 [//]: # (end addons)
 
