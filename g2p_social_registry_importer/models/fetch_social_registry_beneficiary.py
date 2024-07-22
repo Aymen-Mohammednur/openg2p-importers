@@ -146,7 +146,7 @@ class G2PFetchSocialRegistryBeneficiary(models.Model):
             index = graphql_query.find("(") + 1
             is_group = str(self.target_registry == "group").lower()
             if not index:
-                get_registrants_index = graphql_query.find("getRegistrants") + 15
+                get_registrants_index = graphql_query.find("getRegistrants") + 14
                 graphql_query = (
                     graphql_query[:get_registrants_index] + "()" + graphql_query[get_registrants_index:]
                 )
@@ -160,7 +160,7 @@ class G2PFetchSocialRegistryBeneficiary(models.Model):
         if self.last_sync_date:
             index = graphql_query.find("(") + 1
             if not index:
-                get_registrants_index = graphql_query.find("getRegistrants") + 15
+                get_registrants_index = graphql_query.find("getRegistrants") + 14
                 graphql_query = (
                     graphql_query[:get_registrants_index] + "()" + graphql_query[get_registrants_index:]
                 )
@@ -511,6 +511,8 @@ class G2PFetchSocialRegistryBeneficiary(models.Model):
                 else:
                     kind = "success"
                     message = _("No matching records found.")
+
+            self.last_sync_date = fields.Datetime.now()
 
         else:
             kind = "danger"
