@@ -5,17 +5,26 @@ from odoo.tests.common import TransactionCase
 from odoo.addons.g2p_odk_importer.models.odk_client import ODKClient
 
 
-class TestOdkConfig(TransactionCase):
+class TestOdkImport(TransactionCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
         cls.base_url = "http://example.com"
         cls.username = "test_user"
         cls.password = "test_password"
-        cls.project_id = 5
+        cls.project_id = "5"
         cls.form_id = "test_form_id"
         cls.target_registry = "group"
         cls.json_formatter = "{ name: .name, age: .age }"
+
+        cls.odk_config = cls.env["odk.config"].create(
+            {
+                "name": "Test ODK Config",
+                "base_url": cls.base_url,
+                "username": cls.username,
+                "password": cls.password,
+            }
+        )
 
     @patch.object(ODKClient, "login")
     @patch.object(ODKClient, "test_connection")
@@ -23,12 +32,9 @@ class TestOdkConfig(TransactionCase):
         mock_test_connection.return_value = True
         mock_login.return_value = None
 
-        odk_config = self.env["odk.config"].create(
+        odk_import = self.env["odk.import"].create(
             {
-                "name": "Test ODK Config",
-                "base_url": self.base_url,
-                "username": self.username,
-                "password": self.password,
+                "odk_config": self.odk_config.id,
                 "project": self.project_id,
                 "form_id": self.form_id,
                 "target_registry": self.target_registry,
@@ -36,7 +42,7 @@ class TestOdkConfig(TransactionCase):
             }
         )
 
-        result = odk_config.test_connection()
+        result = odk_import.test_connection()
 
         self.assertTrue(mock_login.called)
         self.assertTrue(mock_test_connection.called)
@@ -49,12 +55,9 @@ class TestOdkConfig(TransactionCase):
         mock_import_delta_records.return_value = {"form_updated": True}
         mock_login.return_value = None
 
-        odk_config = self.env["odk.config"].create(
+        odk_import = self.env["odk.import"].create(
             {
-                "name": "Test ODK Config",
-                "base_url": self.base_url,
-                "username": self.username,
-                "password": self.password,
+                "odk_config": self.odk_config.id,
                 "project": self.project_id,
                 "form_id": self.form_id,
                 "target_registry": self.target_registry,
@@ -62,7 +65,7 @@ class TestOdkConfig(TransactionCase):
             }
         )
 
-        result = odk_config.import_records()
+        result = odk_import.import_records()
 
         self.assertTrue(mock_login.called)
         self.assertTrue(mock_import_delta_records.called)
@@ -72,14 +75,12 @@ class TestOdkConfig(TransactionCase):
     @patch.object(ODKClient, "login")
     @patch.object(ODKClient, "import_delta_records")
     def test_import_records_no_updates(self, mock_import_delta_records, mock_login):
+        mock_import_delta_records.return_value = {}
         mock_login.return_value = None
 
-        odk_config = self.env["odk.config"].create(
+        odk_import = self.env["odk.import"].create(
             {
-                "name": "Test ODK Config",
-                "base_url": self.base_url,
-                "username": self.username,
-                "password": self.password,
+                "odk_config": self.odk_config.id,
                 "project": self.project_id,
                 "form_id": self.form_id,
                 "target_registry": self.target_registry,
@@ -87,7 +88,7 @@ class TestOdkConfig(TransactionCase):
             }
         )
 
-        result = odk_config.import_records()
+        result = odk_import.import_records()
 
         self.assertTrue(mock_login.called)
         self.assertTrue(mock_import_delta_records.called)
