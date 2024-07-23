@@ -11,7 +11,7 @@
     "license": "LGPL-3",
     "depends": ["g2p_odk_importer", "g2p_program_registrant_info"],
     "data": [
-        "views/odk_config_views.xml",
+        "views/odk_import_views.xml",
     ],
     "external_dependencies": {},
     "application": True,

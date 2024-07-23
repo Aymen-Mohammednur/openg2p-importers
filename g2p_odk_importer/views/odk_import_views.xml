@@ -47,7 +47,7 @@
         <field name="name">odk.import.form</field>
         <field name="model">odk.import</field>
         <field name="arch" type="xml">
-            <form string="ODK Configuration">
+            <form string="ODK Import">
                 <header>
                     <button
                         name="test_connection"
