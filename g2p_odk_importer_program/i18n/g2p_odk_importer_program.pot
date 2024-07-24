@@ -14,12 +14,12 @@ msgstr ""
 "Plural-Forms: \n"
 
 #. module: g2p_odk_importer_program
-#: model:ir.model,name:g2p_odk_importer_program.model_odk_config
-msgid "ODK Configuration"
+#: model:ir.model,name:g2p_odk_importer_program.model_odk_import
+msgid "ODK Import"
 msgstr ""
 
 #. module: g2p_odk_importer_program
-#: model:ir.model.fields,field_description:g2p_odk_importer_program.field_odk_config__program
+#: model:ir.model.fields,field_description:g2p_odk_importer_program.field_odk_import__program
 msgid "Program"
 msgstr ""
 
