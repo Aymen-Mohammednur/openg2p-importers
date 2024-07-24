@@ -17,8 +17,8 @@
     "data": [
         "security/ir.model.access.csv",
         "views/odk_config_views.xml",
+        "views/odk_import_views.xml",
         "views/odk_menu.xml",
-        "data/odk_cron.xml",
     ],
     "external_dependencies": {
         "python": [

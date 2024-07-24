@@ -108,9 +108,10 @@ class ODKClient:
                     self.env["res.partner"].sudo().create(updated_mapped_json)
 
                 data.update({"form_updated": True})
-            except (AttributeError, Exception):
+            except Exception as e:
                 data.update({"form_failed": True})
-                _logger.error("An exception occurred", exc_info=True)
+                _logger.error("An exception occurred%s" % e)
+                raise ValidationError(f"The following errors occurred:\n{e}") from e
 
         return data
 
