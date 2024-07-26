@@ -25,13 +25,17 @@
                         <field name="username" />
                         <field name="password" password="true" />
                     </group>
+                    <group string="Project details">
+                        <field name="project" />
+                        <field name="form_id" />
+                    </group>
                 </sheet>
             </form>
         </field>
     </record>
 
     <record id="action_odk_config" model="ir.actions.act_window">
-        <field name="name">ODK Configuration</field>
+        <field name="name">Configuration</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">odk.config</field>
         <field name="view_mode">tree,form</field>

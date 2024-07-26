@@ -16,7 +16,7 @@
         <field name="priority">1</field>
         <field name="arch" type="xml">
             <tree>
-                <field name="project" />
+                <field name="odk_config_name" />
                 <field name="job_status" />
                 <button
                     type="action"
@@ -99,10 +99,6 @@
                     </div>
                     <group string="ODK Configuration">
                         <field name="odk_config" />
-                    </group>
-                    <group string="Project details">
-                        <field name="project" />
-                        <field name="form_id" />
                     </group>
                     <group string="Target settings">
                         <field name="target_registry" />

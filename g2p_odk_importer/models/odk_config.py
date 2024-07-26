@@ -13,3 +13,5 @@ class OdkConfig(models.Model):
     base_url = fields.Char(string="Base URL", required=True)
     username = fields.Char(required=True)
     password = fields.Char(required=True)
+    project = fields.Char(required=False)
+    form_id = fields.Char(string="Form ID", required=False)

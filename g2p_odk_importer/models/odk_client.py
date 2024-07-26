@@ -89,6 +89,7 @@ class ODKClient:
             raise ValidationError(f"Failed to parse response: {e}") from e
 
         for member in data["value"]:
+            _logger.info("ODK RAW DATA:%s" % member)
             try:
                 mapped_json = pyjq.compile(self.json_formatter).all(member)[0]
                 if self.target_registry == "individual":
