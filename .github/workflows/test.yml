@@ -78,6 +78,8 @@ jobs:
         ports:
           - 5432:5432
     steps:
+      # TODO: Think of caching dependency install.
+      - run: DEBIAN_FRONTEND=noninteractive apt-get install -qq --no-install-recommends build-essential autoconf autotools-dev automake libtool
       - uses: actions/checkout@v3
         with:
           persist-credentials: false
