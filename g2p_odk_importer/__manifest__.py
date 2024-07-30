@@ -23,7 +23,8 @@
     "external_dependencies": {
         "python": [
             "pyjq",
-        ]
+        ],
+        "deb": ["build-essential", "autoconf", "autotools-dev", "automake", "libtool"],
     },
     "application": True,
     "installable": True,
