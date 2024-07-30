@@ -23,6 +23,8 @@ class TestOdkImport(TransactionCase):
                 "base_url": cls.base_url,
                 "username": cls.username,
                 "password": cls.password,
+                "project": cls.project_id,
+                "form_id": cls.form_id,
             }
         )
 
@@ -35,8 +37,6 @@ class TestOdkImport(TransactionCase):
         odk_import = self.env["odk.import"].create(
             {
                 "odk_config": self.odk_config.id,
-                "project": self.project_id,
-                "form_id": self.form_id,
                 "target_registry": self.target_registry,
                 "json_formatter": self.json_formatter,
             }
@@ -58,8 +58,6 @@ class TestOdkImport(TransactionCase):
         odk_import = self.env["odk.import"].create(
             {
                 "odk_config": self.odk_config.id,
-                "project": self.project_id,
-                "form_id": self.form_id,
                 "target_registry": self.target_registry,
                 "json_formatter": self.json_formatter,
             }
@@ -81,8 +79,6 @@ class TestOdkImport(TransactionCase):
         odk_import = self.env["odk.import"].create(
             {
                 "odk_config": self.odk_config.id,
-                "project": self.project_id,
-                "form_id": self.form_id,
                 "target_registry": self.target_registry,
                 "json_formatter": self.json_formatter,
             }
