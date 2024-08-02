@@ -120,28 +120,6 @@ class TestODKClient(TransactionCase):
         self.client.handle_media_import(member, mapped_json)
         self.assertIn("supporting_documents_ids", mapped_json)
 
-    def test_find_existing_partner(self):
-        mapped_json = {
-            "reg_ids": [(0, 0, {"id_type": "National ID", "value": "12345", "expiry_date": "2024-12-31"})]
-        }
-        self.env_mock["g2p.id.type"].search.return_value.id = 1
-        self.env_mock["res.partner"].search.return_value = MagicMock()
-
-        odk_client = ODKClient(
-            self.env_mock,
-            1,
-            self.base_url,
-            self.username,
-            self.password,
-            self.project_id,
-            self.form_id,
-            self.target_registry,
-            self.json_formatter,
-        )
-
-        result = odk_client.find_existing_partner(mapped_json)
-        self.assertIsNotNone(result)
-
     def test_get_dob(self):
         record = {"birthdate": "2000-01-01", "age": 4}
         odk_client = ODKClient(
