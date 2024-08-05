@@ -59,6 +59,12 @@ msgid "Completed"
 msgstr ""
 
 #. module: g2p_odk_importer
+#: model:ir.actions.act_window,name:g2p_odk_importer.action_odk_config
+#: model:ir.ui.menu,name:g2p_odk_importer.odk_config_menu
+msgid "Configuration"
+msgstr ""
+
+#. module: g2p_odk_importer
 #: model:ir.model.fields,field_description:g2p_odk_importer.field_odk_config__create_uid
 #: model:ir.model.fields,field_description:g2p_odk_importer.field_odk_import__create_uid
 msgid "Created by"
@@ -92,7 +98,7 @@ msgid "End Time"
 msgstr ""
 
 #. module: g2p_odk_importer
-#: model:ir.model.fields,field_description:g2p_odk_importer.field_odk_import__form_id
+#: model:ir.model.fields,field_description:g2p_odk_importer.field_odk_config__form_id
 msgid "Form ID"
 msgstr ""
 
@@ -158,6 +164,7 @@ msgstr ""
 
 #. module: g2p_odk_importer
 #: model:ir.model.fields,field_description:g2p_odk_importer.field_odk_config__name
+#: model:ir.model.fields,field_description:g2p_odk_importer.field_odk_import__odk_config_name
 msgid "Name"
 msgstr ""
 
@@ -172,9 +179,7 @@ msgid "ODK Config"
 msgstr ""
 
 #. module: g2p_odk_importer
-#: model:ir.actions.act_window,name:g2p_odk_importer.action_odk_config
 #: model:ir.model,name:g2p_odk_importer.model_odk_config
-#: model:ir.ui.menu,name:g2p_odk_importer.odk_config_menu
 #: model_terms:ir.ui.view,arch_db:g2p_odk_importer.view_odk_config_form
 #: model_terms:ir.ui.view,arch_db:g2p_odk_importer.view_odk_import_form
 msgid "ODK Configuration"
@@ -208,12 +213,12 @@ msgid "Please configure the ODK."
 msgstr ""
 
 #. module: g2p_odk_importer
-#: model:ir.model.fields,field_description:g2p_odk_importer.field_odk_import__project
+#: model:ir.model.fields,field_description:g2p_odk_importer.field_odk_config__project
 msgid "Project"
 msgstr ""
 
 #. module: g2p_odk_importer
-#: model_terms:ir.ui.view,arch_db:g2p_odk_importer.view_odk_import_form
+#: model_terms:ir.ui.view,arch_db:g2p_odk_importer.view_odk_config_form
 msgid "Project details"
 msgstr ""
 
