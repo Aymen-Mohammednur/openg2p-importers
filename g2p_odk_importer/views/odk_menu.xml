@@ -12,7 +12,7 @@
 
     <menuitem
         id="odk_config_menu"
-        name="ODK Configuration"
+        name="Configuration"
         parent="odk_menu_root"
         sequence="1"
         action="g2p_odk_importer.action_odk_config"

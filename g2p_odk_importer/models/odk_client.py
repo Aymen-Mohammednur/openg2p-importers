@@ -89,6 +89,7 @@ class ODKClient:
             raise ValidationError(f"Failed to parse response: {e}") from e
 
         for member in data["value"]:
+            _logger.info("ODK RAW DATA:%s" % member)
             try:
                 mapped_json = pyjq.compile(self.json_formatter).all(member)[0]
                 if self.target_registry == "individual":
@@ -101,11 +102,7 @@ class ODKClient:
 
                 updated_mapped_json = self.get_addl_data(mapped_json)
 
-                existing_partner = self.find_existing_partner(mapped_json)
-                if existing_partner:
-                    existing_partner.write(updated_mapped_json)
-                else:
-                    self.env["res.partner"].sudo().create(updated_mapped_json)
+                self.env["res.partner"].sudo().create(updated_mapped_json)
 
                 data.update({"form_updated": True})
             except Exception as e:
@@ -213,20 +210,6 @@ class ODKClient:
                         },
                     )
                 ]
-
-    def find_existing_partner(self, mapped_json):
-        if "reg_ids" not in mapped_json:
-            return None
-        for reg_id_tuple in mapped_json["reg_ids"]:
-            reg_id = reg_id_tuple[2]
-            id_type_id = self.env["g2p.id.type"].search([("id", "=", reg_id["id_type"])], limit=1).id
-            existing_partner = self.env["res.partner"].search(
-                [("reg_ids.id_type", "=", id_type_id), ("reg_ids.value", "=", reg_id["value"])], limit=1
-            )
-            if existing_partner:
-                mapped_json["reg_ids"].remove(reg_id_tuple)
-                return existing_partner
-        return None
 
     def get_member_kind(self, record):
         kind_as_str = record.get("kind", None)

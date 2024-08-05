@@ -16,8 +16,7 @@ class OdkImport(models.Model):
     _description = "ODK Import"
 
     odk_config = fields.Many2one("odk.config", string="ODK Config", required=True)
-    project = fields.Char(required=False)
-    form_id = fields.Char(string="Form ID", required=False)
+    odk_config_name = fields.Char(related="odk_config.name")
     json_formatter = fields.Text(string="JSON Formatter", required=True)
     target_registry = fields.Selection([("individual", "Individual"), ("group", "Group")], required=True)
     last_sync_time = fields.Datetime(string="Last synced on", required=False)
@@ -57,8 +56,8 @@ class OdkImport(models.Model):
                 config.odk_config.base_url,
                 config.odk_config.username,
                 config.odk_config.password,
-                config.project,
-                config.form_id,
+                config.odk_config.project,
+                config.odk_config.form_id,
                 config.target_registry,
             )
             client.login()
@@ -85,8 +84,8 @@ class OdkImport(models.Model):
                 config.odk_config.base_url,
                 config.odk_config.username,
                 config.odk_config.password,
-                config.project,
-                config.form_id,
+                config.odk_config.project,
+                config.odk_config.form_id,
                 config.target_registry,
                 config.json_formatter,
             )
@@ -123,8 +122,8 @@ class OdkImport(models.Model):
             config.base_url,
             config.username,
             config.password,
-            self.project,
-            self.form_id,
+            config.project,
+            config.form_id,
             self.target_registry,
             self.json_formatter,
         )
