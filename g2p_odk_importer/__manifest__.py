@@ -11,12 +11,14 @@
     "license": "LGPL-3",
     "depends": [
         "queue_job",
+        "g2p_documents",
+        "g2p_registry_base",
     ],
     "data": [
         "security/ir.model.access.csv",
         "views/odk_config_views.xml",
+        "views/odk_import_views.xml",
         "views/odk_menu.xml",
-        "data/odk_cron.xml",
     ],
     "external_dependencies": {
         "python": [
