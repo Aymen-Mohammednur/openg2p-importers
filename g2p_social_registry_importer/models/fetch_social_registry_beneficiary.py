@@ -259,6 +259,28 @@ class G2PFetchSocialRegistryBeneficiary(models.Model):
         res = None
         return res
 
+    def update_reg_id(self, partner_data):
+        if "reg_ids" in partner_data:
+            partner_data["reg_ids"] = [
+                (
+                    0,
+                    0,
+                    {
+                        "id_type": self.env["g2p.id.type"]
+                        .sudo()
+                        .search([("name", "=", reg_id.get("id_type").get("name"))], limit=1)
+                        .id,
+                        "value": reg_id.get("value"),
+                        "expiry_date": reg_id.get("expiry_date"),
+                        "status": reg_id.get("status"),
+                        "description": reg_id.get("description"),
+                    },
+                )
+                for reg_id in partner_data["reg_ids"]
+            ]
+
+        return partner_data
+
     def create_or_update_registrant(self, partner_id, partner_data):
         partner_data.update({"is_registrant": True})
 
@@ -288,7 +310,9 @@ class G2PFetchSocialRegistryBeneficiary(models.Model):
                 # TODO: Handle the phone number logic for group members
                 individual_data.update({"is_registrant": True, "phone_number_ids": []})
 
-                individual = self.env["res.partner"].sudo().create(individual_data)
+                update_individual_data = self.update_reg_id(individual_data)
+
+                individual = self.env["res.partner"].sudo().create(update_individual_data)
                 if individual:
                     kind = self.get_member_kind(individual_mem)
                     individual_data = {"individual": individual.id}
