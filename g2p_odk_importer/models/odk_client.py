@@ -229,7 +229,7 @@ class ODKClient:
 
     def get_gender(self, gender_val):
         if gender_val:
-            gender = self.env["gender.type"].sudo().search([("code", "=", gender_val)], limit=1)
+            gender = self.env["gender.type"].sudo().search([("value", "=", gender_val)], limit=1)
             return gender.code if gender else None
         return None
 
