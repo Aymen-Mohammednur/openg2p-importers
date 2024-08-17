@@ -4,7 +4,7 @@
     "name": "G2P ODK Importer",
     "category": "Connector",
     "summary": "Import records from ODK",
-    "version": "17.0.1.2.0",
+    "version": "17.0.1.2.0-develop",
     "sequence": 3,
     "author": "OpenG2P",
     "website": "https://openg2p.org",

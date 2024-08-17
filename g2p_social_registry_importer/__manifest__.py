@@ -4,7 +4,7 @@
     "name": "OpenG2P Social Registry Importer",
     "category": "G2P",
     "summary": "Import records from Social Registry",
-    "version": "17.0.1.1.0",
+    "version": "17.0.1.2.0-develop",
     "author": "OpenG2P",
     "development_status": "Alpha",
     "website": "https://openg2p.org",
