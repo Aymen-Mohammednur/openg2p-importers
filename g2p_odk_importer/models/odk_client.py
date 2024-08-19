@@ -6,6 +6,7 @@ from datetime import datetime
 
 import pyjq
 import requests
+from dateutil import parser
 
 from odoo import _
 from odoo.exceptions import ValidationError
@@ -87,6 +88,9 @@ class ODKClient:
         except requests.RequestException as e:
             _logger.exception("Failed to parse response: %s", e)
             raise ValidationError(f"Failed to parse response: {e}") from e
+
+        # Sort the list of submissions based on the submission_time field
+        data["value"] = sorted(data["value"], key=lambda x: parser.parse(x["submission_time"]))
 
         for member in data["value"]:
             _logger.info("ODK RAW DATA:%s" % member)
