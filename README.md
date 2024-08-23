@@ -1,8 +1,8 @@
 
 <!-- /!\ Non OCA Context : Set here the badge of your runbot / runboat instance. -->
-[![Pre-commit Status](https://github.com/OpenG2P/openg2p-importer/actions/workflows/pre-commit.yml/badge.svg?branch=17.0-develop)](https://github.com/OpenG2P/openg2p-importer/actions/workflows/pre-commit.yml?query=branch%3A17.0-develop)
-[![Build Status](https://github.com/OpenG2P/openg2p-importer/actions/workflows/test.yml/badge.svg?branch=17.0-develop)](https://github.com/OpenG2P/openg2p-importer/actions/workflows/test.yml?query=branch%3A17.0-develop)
-[![codecov](https://codecov.io/gh/OpenG2P/openg2p-importer/branch/17.0-develop/graph/badge.svg)](https://codecov.io/gh/OpenG2P/openg2p-importer)
+[![Pre-commit Status](https://github.com/OpenG2P/openg2p-importer/actions/workflows/pre-commit.yml/badge.svg?branch=17.0-1.2)](https://github.com/OpenG2P/openg2p-importer/actions/workflows/pre-commit.yml?query=branch%3A17.0-1.2)
+[![Build Status](https://github.com/OpenG2P/openg2p-importer/actions/workflows/test.yml/badge.svg?branch=17.0-1.2)](https://github.com/OpenG2P/openg2p-importer/actions/workflows/test.yml?query=branch%3A17.0-1.2)
+[![codecov](https://codecov.io/gh/OpenG2P/openg2p-importer/branch/17.0-1.2/graph/badge.svg)](https://codecov.io/gh/OpenG2P/openg2p-importer)
 <!-- /!\ Non OCA Context : Set here the badge of your translation instance. -->
 
 <!-- /!\ do not modify above this line -->
@@ -24,7 +24,7 @@ addon | version | maintainers | summary
 [g2p_mis_importer](g2p_mis_importer/) | 17.0.1.2.0 |  | G2P MIS Importer
 [g2p_odk_importer](g2p_odk_importer/) | 17.0.1.2.0 |  | Import records from ODK
 [g2p_odk_importer_program](g2p_odk_importer_program/) | 17.0.1.2.0 |  | Import records from ODK and add then into Program
-[g2p_social_registry_importer](g2p_social_registry_importer/) | 17.0.1.1.0 |  | Import records from Social Registry
+[g2p_social_registry_importer](g2p_social_registry_importer/) | 17.0.1.2.0 |  | Import records from Social Registry
 
 [//]: # (end addons)
 
