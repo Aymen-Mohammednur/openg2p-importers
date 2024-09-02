@@ -89,12 +89,13 @@ class ODKClient:
             _logger.exception("Failed to parse response: %s", e)
             raise ValidationError(f"Failed to parse response: {e}") from e
 
-        # Sort the list of submissions based on the submission_time field
+        # Sort the list of submissions based on the submission_time field if it exists
         data["value"] = sorted(
             data["value"],
-            key=lambda x: parser.parse(x["submission_time"])
-            if x.get("submission_time") not in (None, "")
-            else None,
+            key=lambda x: (
+                x.get("submission_time") in (None, ""),  # True for invalid times, sorts to end
+                parser.parse(x["submission_time"]) if x.get("submission_time") not in (None, "") else None,
+            ),
         )
 
         for member in data["value"]:
