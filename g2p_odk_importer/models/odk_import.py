@@ -37,6 +37,64 @@ class OdkImport(models.Model):
     start_datetime = fields.Datetime(string="Start Time", required=False)
     end_datetime = fields.Datetime(string="End Time", required=False)
 
+    enable_import_instance = fields.Char(string="ODK Setting Param", compute="_compute_config_param_value")
+
+    @api.depends()
+    def _compute_config_param_value(self):
+        config_value = self.env["ir.config_parameter"].sudo().get_param("g2p_odk_importer.enable_odk")
+        for record in self:
+            record.enable_import_instance = config_value
+
+    # ********** Fetch record using instance ID ************
+    instance_id = fields.Char()
+
+    def fetch_record_by_instance_id(self):
+        ODK_SETTING = self.env["ir.config_parameter"].get_param("g2p_odk_importer.enable_odk")
+        if not ODK_SETTING:
+            raise UserError(_("Please enable the ODK import instanceID in the ResConfig settings"))
+
+        if not self.odk_config:
+            raise UserError(_("Please configure the ODK."))
+
+        if not self.instance_id:
+            raise UserError(_("Please give the instance ID."))
+
+        for config in self:
+            client = ODKClient(
+                self.env,
+                config.id,
+                config.odk_config.base_url,
+                config.odk_config.username,
+                config.odk_config.password,
+                config.odk_config.project,
+                config.odk_config.form_id,
+                config.target_registry,
+                config.json_formatter,
+            )
+            client.login()
+
+            imported = client.import_record_by_instance_id(instance_id=config.instance_id)
+            if "form_updated" in imported:
+                message = "ODK form records is imported successfully."
+                types = "success"
+            elif "form_failed" in imported:
+                message = "ODK form import failed"
+                types = "danger"
+            else:
+                message = "No record found using this instance ID."
+                types = "warning"
+            return {
+                "type": "ir.actions.client",
+                "tag": "display_notification",
+                "params": {
+                    "type": types,
+                    "message": message,
+                    "next": {"type": "ir.actions.act_window_close"},
+                },
+            }
+
+    # ******************  END  ***************************
+
     @api.constrains("json_formatter")
     def constraint_json_fields(self):
         for rec in self:
@@ -112,7 +170,7 @@ class OdkImport(models.Model):
                 },
             }
 
-    def import_records_by_id(self, _id):
+    def import_records_by_cron(self, _id):
         config = self.env["odk.config"].browse(_id)
         if not config.base_url:
             raise UserError(_("Please configure the ODK."))
@@ -145,7 +203,7 @@ class OdkImport(models.Model):
                         "interval_type": "minutes",
                         "model_id": self.env["ir.model"].search([("model", "=", "odk.import")]).id,
                         "state": "code",
-                        "code": "model.import_records_by_id(" + str(rec.id) + ")",
+                        "code": "model.import_records_by_cron(" + str(rec.id) + ")",
                         "doall": False,
                         "numbercall": -1,
                     }

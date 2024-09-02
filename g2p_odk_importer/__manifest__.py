@@ -19,6 +19,7 @@
         "views/odk_config_views.xml",
         "views/odk_import_views.xml",
         "views/odk_menu.xml",
+        "views/res_config_view.xml",
     ],
     "external_dependencies": {
         "python": [
