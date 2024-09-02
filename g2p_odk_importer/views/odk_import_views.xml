@@ -107,6 +107,17 @@
                     <group string="Time interval">
                         <field name="interval_hours" />
                     </group>
+                    <group string="Fetch Records Using Instance ID">
+                        <field name="instance_id" string="Instance ID" />
+                    </group>
+                    <div>
+                        <button
+                            type="object"
+                            class="btn-primary"
+                            string="Fetch Record"
+                            name="fetch_record_by_instance_id"
+                        />
+                    </div>
                 </sheet>
             </form>
         </field>

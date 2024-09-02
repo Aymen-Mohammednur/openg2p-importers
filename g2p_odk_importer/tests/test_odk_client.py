@@ -200,3 +200,34 @@ class TestODKClient(TransactionCase):
             "http://example.com", "1", "1", "test_instance", "test.jpg", "fake_token"
         )
         self.assertEqual(result, b"fake_image_data")
+
+    @patch("requests.get")
+    def test_import_record_by_instance_id_success(self, mock_get):
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.json.return_value = {
+            "value": [
+                {
+                    "full_name": "Test",
+                }
+            ]
+        }
+        mock_get.return_value = mock_response
+
+        odk_client = ODKClient(
+            self.env_mock,
+            1,
+            self.base_url,
+            self.username,
+            self.password,
+            self.project_id,
+            self.form_id,
+            self.target_registry,
+            self.json_formatter,
+        )
+
+        instance_id = "test_instance_id"
+        result = odk_client.import_record_by_instance_id(instance_id)
+
+        self.assertIn("form_updated", result)
+        self.assertTrue(result["form_updated"])
