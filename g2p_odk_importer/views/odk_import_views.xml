@@ -107,7 +107,8 @@
                     <group string="Time interval">
                         <field name="interval_hours" />
                     </group>
-                    <group string="Fetch Records Using Instance ID">
+                    <field name="enable_import_instance"  invisible="1"/>
+                    <group string="Fetch Records Using Instance ID" invisible="not enable_import_instance">
                         <field name="instance_id" string="Instance ID" />
                     </group>
                     <div>
@@ -116,6 +117,7 @@
                             class="btn-primary"
                             string="Fetch Record"
                             name="fetch_record_by_instance_id"
+                            invisible="not enable_import_instance"
                         />
                     </div>
                 </sheet>

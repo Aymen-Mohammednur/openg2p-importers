@@ -3,3 +3,4 @@
 from . import odk_client
 from . import odk_config
 from . import odk_import
+from . import res_config
