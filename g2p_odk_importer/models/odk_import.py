@@ -37,11 +37,11 @@ class OdkImport(models.Model):
     start_datetime = fields.Datetime(string="Start Time", required=False)
     end_datetime = fields.Datetime(string="End Time", required=False)
 
-    enable_import_instance = fields.Char(string='ODK Setting Param', compute='_compute_config_param_value')
+    enable_import_instance = fields.Char(string="ODK Setting Param", compute="_compute_config_param_value")
 
     @api.depends()
     def _compute_config_param_value(self):
-        config_value = self.env['ir.config_parameter'].sudo().get_param('g2p_odk_importer.enable_odk')
+        config_value = self.env["ir.config_parameter"].sudo().get_param("g2p_odk_importer.enable_odk")
         for record in self:
             record.enable_import_instance = config_value
 
@@ -52,7 +52,7 @@ class OdkImport(models.Model):
         ODK_SETTING = self.env["ir.config_parameter"].get_param("g2p_odk_importer.enable_odk")
         if not ODK_SETTING:
             raise UserError(_("Please enable the ODK import instanceID in the ResConfig settings"))
-        
+
         if not self.odk_config:
             raise UserError(_("Please configure the ODK."))
 

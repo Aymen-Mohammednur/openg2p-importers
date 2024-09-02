@@ -107,7 +107,7 @@
                     <group string="Time interval">
                         <field name="interval_hours" />
                     </group>
-                    <field name="enable_import_instance"  invisible="1"/>
+                    <field name="enable_import_instance" invisible="1" />
                     <group string="Fetch Records Using Instance ID" invisible="not enable_import_instance">
                         <field name="instance_id" string="Instance ID" />
                     </group>
