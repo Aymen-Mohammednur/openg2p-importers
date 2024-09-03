@@ -68,10 +68,9 @@ class ODKClient:
             raise ValidationError(f"Connection test failed: {e}") from e
 
     # ruff: noqa: C901
-    def import_delta_records(self, last_sync_timestamp=None, skip=0, top=100):
+    def import_delta_records(self, last_sync_timestamp=None, skip=0):
         url = f"{self.base_url}/v1/projects/{self.project_id}/forms/{self.form_id}.svc/Submissions"
         params = {
-            "$top": top,
             "$skip": skip,
             "$count": "true",
             "$expand": "*",
