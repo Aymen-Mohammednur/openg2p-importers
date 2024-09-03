@@ -150,7 +150,7 @@ class OdkImport(models.Model):
             client.login()
             imported = client.import_delta_records(last_sync_timestamp=config.last_sync_time)
             if "form_updated" in imported:
-                message = "ODK form records were imported successfully."
+                message = f"ODK form {imported.get('partner_count')} records were imported successfully."
                 types = "success"
                 config.update({"last_sync_time": fields.Datetime.now()})
             elif "form_failed" in imported:
