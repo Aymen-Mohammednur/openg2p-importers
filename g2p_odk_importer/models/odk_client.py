@@ -96,7 +96,7 @@ class ODKClient:
                 parser.parse(x["submission_time"]) if x.get("submission_time") not in (None, "") else None,
             ),
         )
-
+        partner_count = 0
         for member in data["value"]:
             _logger.info("ODK RAW DATA:%s" % member)
             try:
@@ -112,12 +112,14 @@ class ODKClient:
                 updated_mapped_json = self.get_addl_data(mapped_json)
 
                 self.env["res.partner"].sudo().create(updated_mapped_json)
-
+                partner_count += 1
                 data.update({"form_updated": True})
             except Exception as e:
                 data.update({"form_failed": True})
                 _logger.error("An exception occurred%s" % e)
                 raise ValidationError(f"The following errors occurred:\n{e}") from e
+
+        data.update({"partner_count": partner_count})
 
         return data
 
@@ -308,9 +310,14 @@ class ODKClient:
             f"Submissions('{instance_id}')"
         )
         headers = {"Authorization": f"Bearer {self.session}"}
+        params = {
+            "$skip": 0,
+            "$count": "true",
+            "$expand": "*",
+        }
 
         try:
-            response = requests.get(url, headers=headers, timeout=10)
+            response = requests.get(url, headers=headers, params=params, timeout=10)
             response.raise_for_status()
             data = response.json()
         except requests.RequestException as e:

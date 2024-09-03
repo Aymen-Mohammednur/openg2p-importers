@@ -52,7 +52,7 @@ class TestOdkImport(TransactionCase):
     @patch.object(ODKClient, "login")
     @patch.object(ODKClient, "import_delta_records")
     def test_import_records(self, mock_import_delta_records, mock_login):
-        mock_import_delta_records.return_value = {"form_updated": True}
+        mock_import_delta_records.return_value = {"form_updated": True, "partner_count": 5}
         mock_login.return_value = None
 
         odk_import = self.env["odk.import"].create(
@@ -67,8 +67,11 @@ class TestOdkImport(TransactionCase):
 
         self.assertTrue(mock_login.called)
         self.assertTrue(mock_import_delta_records.called)
+
+        expected_message = "ODK form 5 records were imported successfully."
+
         self.assertEqual(result["params"]["type"], "success")
-        self.assertEqual(result["params"]["message"], "ODK form records were imported successfully.")
+        self.assertEqual(result["params"]["message"], expected_message)
 
     @patch.object(ODKClient, "login")
     @patch.object(ODKClient, "import_delta_records")
