@@ -68,10 +68,9 @@ class ODKClient:
             raise ValidationError(f"Connection test failed: {e}") from e
 
     # ruff: noqa: C901
-    def import_delta_records(self, last_sync_timestamp=None, skip=0, top=100):
+    def import_delta_records(self, last_sync_timestamp=None, skip=0):
         url = f"{self.base_url}/v1/projects/{self.project_id}/forms/{self.form_id}.svc/Submissions"
         params = {
-            "$top": top,
             "$skip": skip,
             "$count": "true",
             "$expand": "*",
@@ -97,7 +96,7 @@ class ODKClient:
                 parser.parse(x["submission_time"]) if x.get("submission_time") not in (None, "") else None,
             ),
         )
-
+        partner_count = 0
         for member in data["value"]:
             _logger.info("ODK RAW DATA:%s" % member)
             try:
@@ -113,12 +112,14 @@ class ODKClient:
                 updated_mapped_json = self.get_addl_data(mapped_json)
 
                 self.env["res.partner"].sudo().create(updated_mapped_json)
-
+                partner_count += 1
                 data.update({"form_updated": True})
             except Exception as e:
                 data.update({"form_failed": True})
                 _logger.error("An exception occurred%s" % e)
                 raise ValidationError(f"The following errors occurred:\n{e}") from e
+
+        data.update({"partner_count": partner_count})
 
         return data
 
@@ -301,3 +302,48 @@ class ODKClient:
         response = requests.get(url, headers=headers, timeout=10)
         response.raise_for_status()
         return response.content
+
+    #  Fetch Record using Instance ID
+    def import_record_by_instance_id(self, instance_id):
+        url = (
+            f"{self.base_url}/v1/projects/{self.project_id}/forms/{self.form_id}.svc/"
+            f"Submissions('{instance_id}')"
+        )
+        headers = {"Authorization": f"Bearer {self.session}"}
+        params = {
+            "$skip": 0,
+            "$count": "true",
+            "$expand": "*",
+        }
+
+        try:
+            response = requests.get(url, headers=headers, params=params, timeout=10)
+            response.raise_for_status()
+            data = response.json()
+        except requests.RequestException as e:
+            _logger.exception("Failed to parse response by using instance ID: %s", e)
+            raise ValidationError(f"Failed to parse response by using instance ID: {e}") from e
+
+        _logger.info(f"ODK RAW DATA by instance ID %s {instance_id} {data}")
+        try:
+            for member in data["value"]:
+                mapped_json = pyjq.compile(self.json_formatter).all(member)[0]
+                if self.target_registry == "individual":
+                    mapped_json.update({"is_registrant": True, "is_group": False})
+                elif self.target_registry == "group":
+                    mapped_json.update({"is_registrant": True, "is_group": True})
+
+                self.handle_one2many_fields(mapped_json)
+                self.handle_media_import(member, mapped_json)
+
+                updated_mapped_json = self.get_addl_data(mapped_json)
+                self.env["res.partner"].sudo().create(updated_mapped_json)
+
+            data.update({"form_updated": True})
+
+        except Exception as e:
+            data.update({"form_failed": True})
+            _logger.error("An exception occurred by instanceID%s" % e)
+            raise ValidationError(f"The following errors occurred by instanceID:\n{e}") from e
+
+        return data

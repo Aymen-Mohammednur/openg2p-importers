@@ -59,6 +59,11 @@ msgid "Completed"
 msgstr ""
 
 #. module: g2p_odk_importer
+#: model:ir.model,name:g2p_odk_importer.model_res_config_settings
+msgid "Config Settings"
+msgstr ""
+
+#. module: g2p_odk_importer
 #: model:ir.actions.act_window,name:g2p_odk_importer.action_odk_config
 #: model:ir.ui.menu,name:g2p_odk_importer.odk_config_menu
 msgid "Configuration"
@@ -93,8 +98,28 @@ msgid "Draft"
 msgstr ""
 
 #. module: g2p_odk_importer
+#: model_terms:ir.ui.view,arch_db:g2p_odk_importer.odk_res_config_settings_view_form
+msgid "Enable ODK import InstanceID"
+msgstr ""
+
+#. module: g2p_odk_importer
+#: model:ir.model.fields,field_description:g2p_odk_importer.field_res_config_settings__enable_odk
+msgid "Enable Odk"
+msgstr ""
+
+#. module: g2p_odk_importer
 #: model:ir.model.fields,field_description:g2p_odk_importer.field_odk_import__end_datetime
 msgid "End Time"
+msgstr ""
+
+#. module: g2p_odk_importer
+#: model_terms:ir.ui.view,arch_db:g2p_odk_importer.view_odk_import_form
+msgid "Fetch Record"
+msgstr ""
+
+#. module: g2p_odk_importer
+#: model_terms:ir.ui.view,arch_db:g2p_odk_importer.view_odk_import_form
+msgid "Fetch Records Using Instance ID"
 msgstr ""
 
 #. module: g2p_odk_importer
@@ -126,6 +151,16 @@ msgstr ""
 #. module: g2p_odk_importer
 #: model:ir.model.fields.selection,name:g2p_odk_importer.selection__odk_import__target_registry__individual
 msgid "Individual"
+msgstr ""
+
+#. module: g2p_odk_importer
+#: model:ir.model.fields,field_description:g2p_odk_importer.field_odk_import__instance_id
+msgid "Instance"
+msgstr ""
+
+#. module: g2p_odk_importer
+#: model_terms:ir.ui.view,arch_db:g2p_odk_importer.view_odk_import_form
+msgid "Instance ID"
 msgstr ""
 
 #. module: g2p_odk_importer
@@ -194,8 +229,23 @@ msgid "ODK Import"
 msgstr ""
 
 #. module: g2p_odk_importer
+#: model_terms:ir.ui.view,arch_db:g2p_odk_importer.odk_res_config_settings_view_form
+msgid "ODK Import Settings"
+msgstr ""
+
+#. module: g2p_odk_importer
 #: model:ir.actions.server,name:g2p_odk_importer.action_odk_import_action
 msgid "ODK Import Start"
+msgstr ""
+
+#. module: g2p_odk_importer
+#: model_terms:ir.ui.view,arch_db:g2p_odk_importer.odk_res_config_settings_view_form
+msgid "ODK Import by Instance ID"
+msgstr ""
+
+#. module: g2p_odk_importer
+#: model:ir.model.fields,field_description:g2p_odk_importer.field_odk_import__enable_import_instance
+msgid "ODK Setting Param"
 msgstr ""
 
 #. module: g2p_odk_importer
@@ -208,8 +258,23 @@ msgstr ""
 #: code:addons/g2p_odk_importer/models/odk_import.py:0
 #: code:addons/g2p_odk_importer/models/odk_import.py:0
 #: code:addons/g2p_odk_importer/models/odk_import.py:0
+#: code:addons/g2p_odk_importer/models/odk_import.py:0
 #, python-format
 msgid "Please configure the ODK."
+msgstr ""
+
+#. module: g2p_odk_importer
+#. odoo-python
+#: code:addons/g2p_odk_importer/models/odk_import.py:0
+#, python-format
+msgid "Please enable the ODK import instanceID in the ResConfig settings"
+msgstr ""
+
+#. module: g2p_odk_importer
+#. odoo-python
+#: code:addons/g2p_odk_importer/models/odk_import.py:0
+#, python-format
+msgid "Please give the instance ID."
 msgstr ""
 
 #. module: g2p_odk_importer
@@ -230,6 +295,11 @@ msgstr ""
 #. module: g2p_odk_importer
 #: model:ir.model.fields.selection,name:g2p_odk_importer.selection__odk_import__job_status__running
 msgid "Running"
+msgstr ""
+
+#. module: g2p_odk_importer
+#: model_terms:ir.ui.view,arch_db:g2p_odk_importer.odk_res_config_settings_view_form
+msgid "Select this to enable ODK import by using instance ID"
 msgstr ""
 
 #. module: g2p_odk_importer
